@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Industrious by TEMPLATED</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+</head>
+<style>
+	.highlights {
+		display: flex;
+		justify-content: center; /* Center the items horizontally */
+		flex-wrap: wrap; /* Allow items to wrap if necessary */
+		margin-top: 20px; /* Optional: Add space above the highlights */
+	}
+
+	.highlights section {
+		margin: 20px; /* Add spacing between sections */
+		max-width: 300px; /* Limit max width of each section */
+		flex: 1 1 300px; /* Allow flexibility */
+		text-align: center; /* Center text within each section */
+	}
+
+	.content {
+		border: 1px solid #ccc; /* Optional: add a border */
+		padding: 20px; /* Add padding */
+		border-radius: 10px; /* Optional: add rounded corners */
+	}
+</style>
+</head>
+<body class="is-preload">
+
+<!-- Header -->
+<header id="header">
+    <a class="logo" href="index.html">Suppliers</a>
+   
+</header>
+<!-- Banner -->
+<section id="banner">
+    <div class="inner">
+        <h1>Suppliers</h1>
+        <p> Manage your Products and Transaction <a href="https://templated.co/"></a></p>
+    </div>
+    <video autoplay loop muted playsinline src="{{ url_for('static', filename='assets/images/industri.mp4') }}"></video>
+</section>
+
+<!-- Highlights -->
+<section class="wrapper">
+    <div class="inner">
+        <header class="special">
+            <h2>Kelola Produksi</h2>
+            <p>Pilih sesuai pilihan</p>
+        </header>
+        <div class="highlights">
+            <section>
+                <div class="content">
+                    <header>
+                        <a href="/manage_product" class="icon fa-cubes"><span class="label">Icon</span></a>
+                        <h3>Kelola Produk Anda</h3>
+                    </header>
+                    <p>Kategori untuk mengelompokkan produk, memudahkan dalam pengorganisasian dan pencarian.</p>
+                </div>
+            </section>
+            <section>
+                <div class="content">
+                    <header>
+						<a href="/manage_transaksi" class="icon fa-check"><span class="label">Icon</span></a> 	
+                        <h3>Kelola Transaksi Anda</h3>
+                    </header>
+                    <p>Informasi harga satuan produk, penting untuk pengelolaan transaksi dan laporan keuangan.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/browser.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+
+</body>
+</html>
