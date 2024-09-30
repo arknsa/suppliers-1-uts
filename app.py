@@ -263,7 +263,7 @@ def manage_pembelian():
                     if id_distributor == "DIS01":
                         api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
                     elif id_distributor == "DIS02":
-                        api_url = f"http://159.223.41.243:8000/api1/status/{no_resi}"
+                        api_url = f"http://159.223.41.243:8000/api/dis/status/{no_resi}"
                     elif id_distributor == "DIS03":
                         api_url = f"http://159.223.41.243:8000/api/dis/status/{no_resi}"
                     else:
@@ -409,6 +409,11 @@ def place_order():
         # Ambil id_distributor dari data transaksi
         distributor_id = transaction_data.get('id_distributor')
 
+        # Cek apakah id_log sudah ada di db_pembelian
+        existing_purchase = db.collection('db_pembelian').where('id_log', '==', transaction_ref).get()
+        if existing_purchase:
+            return jsonify({"error": "Pemesanan dengan id_log ini sudah dilakukan sebelumnya."}), 400
+
         # Tentukan URL API berdasarkan id_distributor
         if distributor_id == "DIS01":
             api_url = "http://159.223.41.243:8000/api/distributors6/orders/fix_kirim"
@@ -432,7 +437,7 @@ def place_order():
 
         # Membuat objek Pembelian baru
         new_purchase = {
-            "id_log": data['id_log'],  # Menggunakan id_log dari transaksi
+            "id_log": transaction_ref,  # Menggunakan id_log dari transaksi
             "total_harga_barang": transaction_data['total_harga_barang'],
             "total_berat_barang": transaction_data['total_berat_barang'],
             "no_resi": order_data['no_resi'],  # Mengambil no_resi dari respons API
