@@ -263,7 +263,7 @@ def manage_pembelian():
                     if id_distributor == "DIS01":
                         api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
                     elif id_distributor == "DIS02":
-                        api_url = f"http://159.223.41.243:8000/api/dis/status/{no_resi}"
+                        api_url = f"http://143.244.170.95:8000/api/status/{no_resi}"
                     elif id_distributor == "DIS03":
                         api_url = f"http://159.223.41.243:8000/api/dis/status/{no_resi}"
                     else:
@@ -309,7 +309,7 @@ def detail_pembelian(id_pembelian):
         flash(f'Terjadi kesalahan: {str(e)}', 'danger')
         return redirect(url_for('manage_pembelian'))
     
-@app.route('/check_price', methods=['POST'])
+@app.route('/api/check_price', methods=['POST'])
 def check_price():
     data = request.json
 
@@ -351,7 +351,7 @@ def check_price():
         if distributor_id == "DIS01":
             api_url = "http://159.223.41.243:8000/api/distributors6/orders/cek_ongkir"
         elif distributor_id == "DIS02":
-            api_url = "http://159.223.41.243:8000/api/distributors2/orders/cek_ongkir"
+            api_url = "http://143.244.170.95:8000/api/distributor5/orders/cek_ongkir"
         elif distributor_id == "DIS03":
             api_url = "http://159.223.41.243:8000/api/distributors3/orders/cek_ongkir"
         else:
@@ -360,9 +360,10 @@ def check_price():
         # Cek ongkir dari distributor
         ongkir_response = requests.post(api_url, json={
             "id_log": id_log,  # Menggunakan id_log yang baru di-generate
-            "kota_asal": "jakarta",  # Auto isi dengan "jakarta"
+            "kota_asal": "solo",  # Auto isi dengan "jakarta"
             "kota_tujuan": data['kota_tujuan'],
             "berat": data["total_berat_barang"]  # Menghitung total berat dari semua item di cart
+            # "quantity": sum(item['quantity'] for item in data['cart'])  # Menghitung total quantity dari semua item di cart
         })
 
         if ongkir_response.status_code != 200:
@@ -392,7 +393,7 @@ def check_price():
 
 
 
-@app.route('/place_order', methods=['POST'])
+@app.route('/api/place_order', methods=['POST'])
 def place_order():
     data = request.json
 
@@ -418,7 +419,7 @@ def place_order():
         if distributor_id == "DIS01":
             api_url = "http://159.223.41.243:8000/api/distributors6/orders/fix_kirim"
         elif distributor_id == "DIS02":
-            api_url = "http://159.223.41.243:8000/api/distributors2/orders/fix_kirim"
+            api_url = "http://143.244.170.95:8000/api/distributor5/orders/fix_kirim"
         elif distributor_id == "DIS03":
             api_url = "http://159.223.41.243:8000/api/distributors3/orders/fix_kirim"
         else:
@@ -462,7 +463,7 @@ def place_order():
 
 
 # Endpoint untuk supplier
-@app.route('/suppliers', methods=['GET'])
+@app.route('/api/suppliers', methods=['GET'])
 def get_suppliers():
     try:
         # Akses koleksi db_produk
@@ -480,7 +481,7 @@ def get_suppliers():
         return jsonify({"error": str(e)}), 400
     
 
-@app.route('/products', methods=['GET'])
+@app.route('/api/products', methods=['GET'])
 def get_products():
     try:
         # Akses koleksi db_produk
@@ -498,7 +499,7 @@ def get_products():
         return jsonify({"error": str(e)}), 400
     
 
-@app.route('/update_stock', methods=['POST'])
+@app.route('/api/update_stock', methods=['POST'])
 def update_stock():
     data = request.json
 
@@ -515,7 +516,7 @@ def update_stock():
         if id_distributor == "DIS01":
             api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
         elif id_distributor == "DIS02":
-            api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
+            api_url = f"http://143.244.170.95:8000/api/status/{no_resi}"
         elif id_distributor == "DIS03":
             api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
         else:
@@ -533,7 +534,7 @@ def update_stock():
         status_response = requests.get(api_url)
         status_data = status_response.json()
 
-        if status_data.get('status') == "On The Way":
+        if status_data.get('status') == "On The Way" or status_data.get('status') == "Kurir mengirim paket":
             # List untuk menyimpan stok yang diperbarui
             updated_stocks = []
 
