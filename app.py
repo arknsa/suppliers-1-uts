@@ -1,9 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models import Transaksi, Pembelian, Supplier, Produk, User
-from flask_bcrypt import Bcrypt
 import requests
 import os
 import firebase_admin
@@ -464,11 +460,11 @@ def update_stock():
 
         # Tentukan URL API berdasarkan id_distributor
         if id_distributor == "DIS01":
-            api_url = f"http://159.223.41.243:8000/api/distributors6/status/{no_resi}"
+            api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
         elif id_distributor == "DIS02":
-            api_url = f"http://159.223.41.243:8000/api/distributors2/status/{no_resi}"
+            api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
         elif id_distributor == "DIS03":
-            api_url = f"http://159.223.41.243:8000/api/distributors3/status/{no_resi}"
+            api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
         else:
             return jsonify({"error": "ID distributor tidak valid"}), 400
 
