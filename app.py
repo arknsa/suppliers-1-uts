@@ -233,6 +233,9 @@ def view_product(id_produk):
     
 pembelian_ref = db.collection('db_pembelian')
 
+from datetime import datetime
+import pytz
+
 @app.route('/manage_pembelian')
 def manage_pembelian():
     pembelian_ref = db.collection('db_pembelian')
@@ -286,6 +289,17 @@ def manage_pembelian():
                     pembelian['id_distributor'] = 'Tidak ditemukan'
                     pembelian['status'] = 'Tidak ditemukan'
 
+            # Konversi tanggal_pembelian dari UTC ke zona waktu Jakarta
+            if 'tanggal_pembelian' in pembelian:
+                timestamp = pembelian['tanggal_pembelian']
+                if isinstance(timestamp, datetime):
+                    # Zona waktu UTC
+                    utc_time = timestamp.replace(tzinfo=pytz.UTC)
+                    # Konversi ke zona waktu Jakarta (WIB)
+                    jakarta_tz = pytz.timezone('Asia/Jakarta')
+                    jakarta_time = utc_time.astimezone(jakarta_tz)
+                    pembelian['tanggal_pembelian'] = jakarta_time.strftime('%Y-%m-%d %H:%M:%S %Z')
+
             pembelian['id_pembelian'] = doc.id
             pembelians.append(pembelian)
 
@@ -293,6 +307,7 @@ def manage_pembelian():
     except Exception as e:
         print(f"Error in manage_pembelian: {e}")
         return "An error occurred", 500
+
 
     
 @app.route('/detail_pembelian/<string:id_pembelian>', methods=['GET'])
@@ -499,7 +514,7 @@ def get_products():
         return jsonify({"error": str(e)}), 400
     
 
-@app.route('/api/update_stock', methods=['POST'])
+@app.route('/update_stock', methods=['POST'])
 def update_stock():
     data = request.json
 
