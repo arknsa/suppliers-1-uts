@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Pembelian</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fb;
+        }
+
+        #header {
+            background-color: #111111;
+            color: #ffffff;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #header .logo {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .container {
+            margin-top: 60px;
+            padding: 20px;
+            max-width: 1920px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #1363c6;
+        }
+
+        .add-button-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .crud-btn {
+            background-color: #1363c6;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            display: inline-block;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 5px;
+        }
+        
+        .crud-btn.delete {
+            background-color: #e74c3c;
+        }
+        
+        .crud-btn.view {
+            background-color: #27ae60;
+        }
+        
+        .crud-btn:hover {
+            background-color: #0d4ea3;
+        }
+        
+        .crud-btn.delete:hover {
+            background-color: #c0392b;
+        }
+        
+        .crud-btn.view:hover {
+            background-color: #1e8449;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        td {
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 150px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .crud-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            #header .logo {
+                margin-bottom: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 80px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 6px;
+            }
+
+            .crud-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <a class="logo" href="/dashboard">Suppliers</a>
+    </header>
+
+    <div class="container" style="text-align: center;">
+        <h2>Kelola Pembelian</h2>
+
+         <!-- Tabel Produk -->
+        <div class="table-container">
+            <table id="managePembelian">
+                <thead>
+                    <tr>
+                        <th>ID Pembelian</th>
+                        <th>ID Log</th>
+                        <th>ID Distributor</th>
+                        <th>No Resi</th>
+                        <th>Harga Pengiriman</th>
+                        <th>Lama Pengiriman</th>
+                        <th>Total Berat Barang</th>
+                        <th>Total Harga Barang</th>
+                        <th>Tanggal Pembelian</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Looping Produk dari Backend -->
+                    {% for pembelian in pembelians %}
+                    <tr>
+                        <td>{{ pembelian.id_pembelian }}</td>
+                        <td>{{ pembelian.id_log }}</td>
+                        <td>{{ pembelian.id_distributor }}</td>
+                        <td>{{ pembelian.no_resi }}</td>
+                        <td>{{ pembelian.harga_pengiriman }}</td>
+                        <td>{{ pembelian.lama_pengiriman }}</td>
+                        <td>{{ pembelian.total_berat_barang }}</td>
+                        <td>{{ pembelian.total_harga_barang }}</td>
+                        <td>{{ pembelian.tanggal_pembelian }}</td>
+                        <td>{{ pembelian.status }}</td>
+                        <td>
+                            <button class="crud-btn" onclick="approve('{{ pembelian.id_log }}', '{{ pembelian.no_resi }}', '{{ pembelian.id_distributor }}')">Approve</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function approve(id_log, no_resi, id_distributor) {
+            fetch('/update_stock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_log: id_log,
+                    no_resi: no_resi,
+                    id_distributor: id_distributor
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Update successful');
+                // Optionally, refresh the page or update the UI
+                location.reload();
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

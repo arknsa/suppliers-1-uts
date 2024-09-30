@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Produk</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fb;
+        }
+
+        #header {
+            background-color: #111111;
+            color: #ffffff;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #header .logo {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .container {
+            margin-top: 60px;
+            padding: 20px;
+            max-width: 1920px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #1363c6;
+        }
+
+        .add-button-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .crud-btn {
+            background-color: #1363c6;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            display: inline-block;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 5px;
+        }
+        
+        .crud-btn.delete {
+            background-color: #e74c3c;
+        }
+        
+        .crud-btn.view {
+            background-color: #27ae60;
+        }
+        
+        .crud-btn:hover {
+            background-color: #0d4ea3;
+        }
+        
+        .crud-btn.delete:hover {
+            background-color: #c0392b;
+        }
+        
+        .crud-btn.view:hover {
+            background-color: #1e8449;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        td {
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 150px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .crud-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            #header .logo {
+                margin-bottom: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 80px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 6px;
+            }
+
+            .crud-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <a class="logo" href="/dashboard">Suppliers</a>
+    </header>
+
+    <div class="container" style="text-align: center;">
+        <h2>Kelola Produk</h2>
+
+        <!-- Tombol Tambah Barang -->
+        <div class="add-button-container">
+            <a href="/add_product" class="crud-btn">Tambah Barang</a>
+        </div>
+
+        <!-- Tabel Produk -->
+        <div class="table-container">
+            <table id="manageProduct">
+                <thead>
+                    <tr>
+                        <th>ID Produk</th>
+                        <th>Nama Produk</th>
+                        <th>Kategori</th>
+                        <th>Stok</th>
+                        <th>Stok Min</th>
+                        <th>Stok Max</th>
+                        <th>Harga</th>
+                        <th>Berat</th>
+                        <th>Height</th>
+                        <th>Width</th>
+                        <th>Genre</th>
+                        <th>Warna</th>
+                        <th>Deskripsi</th>
+                        <th>Gambar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Looping Produk dari Backend -->
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.id_produk }}</td>
+                        <td>{{ product.nama_produk }}</td>
+                        <td>{{ product.kategori }}</td>
+                        <td>{{ product.stock }}</td>
+                        <td>{{ product.stock_minimum }}</td>
+                        <td>{{ product.stock_maximum }}</td>
+                        <td>{{ product.harga }}</td>
+                        <td>{{ product.berat }}</td>
+                        <td>{{ product.height }}</td>
+                        <td>{{ product.width }}</td>
+                        <td>{{ product.genre }}</td>
+                        <td>{{ product.warna }}</td>
+                        <td>{{ product.deskripsi }}</td>
+                        <td><img src="{{ product.link_gambar_barang }}" alt="{{ product.nama_product }}" width="50" height="50" style="object-fit: cover;"></td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/edit_product/{{ product.id_produk }}" class="crud-btn">Edit</a>
+                                <form action="/delete_product/{{ product.id_produk }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="crud-btn delete">Hapus</button>
+                                </form>
+                                <a href="/view_product/{{ product.id_produk }}" class="crud-btn view">View</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
