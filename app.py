@@ -240,12 +240,60 @@ def manage_pembelian():
         pembelians = []
         for doc in pembelian_ref.stream():
             pembelian = doc.to_dict()
+
+            # Extract the actual id_log from the Firestore reference
+            id_log_ref = pembelian.get('id_log')
+            if isinstance(id_log_ref, firestore.DocumentReference):
+                # Mengambil bagian terakhir dari path referensi (ID log)
+                id_log = id_log_ref.id
+                pembelian['id_log'] = id_log
+
+                # Query db_transaksi untuk mendapatkan id_distributor berdasarkan id_log
+                transaksi_ref = db.collection('db_transaksi').document(id_log)
+                transaksi_doc = transaksi_ref.get()
+                
+                if transaksi_doc.exists:
+                    transaksi_data = transaksi_doc.to_dict()
+                    pembelian['id_distributor'] = transaksi_data.get('id_distributor')
+
+                    # Tentukan URL API berdasarkan id_distributor
+                    id_distributor = pembelian['id_distributor']
+                    no_resi = pembelian.get('no_resi', '')  # Pastikan ada field no_resi di pembelian
+                    
+                    if id_distributor == "DIS01":
+                        api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
+                    elif id_distributor == "DIS02":
+                        api_url = f"http://159.223.41.243:8000/api1/status/{no_resi}"
+                    elif id_distributor == "DIS03":
+                        api_url = f"http://159.223.41.243:8000/api/dis/status/{no_resi}"
+                    else:
+                        api_url = None
+                    
+                    # Ambil status pengiriman dari API jika URL valid
+                    if api_url:
+                        try:
+                            status_response = requests.get(api_url)
+                            if status_response.status_code == 200:
+                                status_data = status_response.json()
+                                pembelian['status'] = status_data.get('status', 'Status tidak ditemukan')
+                            else:
+                                pembelian['status'] = f"Error: {status_response.status_code}"
+                        except Exception as e:
+                            pembelian['status'] = f"API Error: {str(e)}"
+                    else:
+                        pembelian['status'] = "ID distributor tidak valid"
+                else:
+                    pembelian['id_distributor'] = 'Tidak ditemukan'
+                    pembelian['status'] = 'Tidak ditemukan'
+
             pembelian['id_pembelian'] = doc.id
             pembelians.append(pembelian)
+
         return render_template('manage_pembelian.html', pembelians=pembelians)
     except Exception as e:
         print(f"Error in manage_pembelian: {e}")
         return "An error occurred", 500
+
     
 @app.route('/detail_pembelian/<string:id_pembelian>', methods=['GET'])
 def detail_pembelian(id_pembelian):

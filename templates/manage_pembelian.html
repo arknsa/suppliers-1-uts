@@ -190,6 +190,7 @@
                     <tr>
                         <th>ID Pembelian</th>
                         <th>ID Log</th>
+                        <th>ID Distributor</th>
                         <th>No Resi</th>
                         <th>Harga Pengiriman</th>
                         <th>Lama Pengiriman</th>
@@ -197,6 +198,7 @@
                         <th>Total Harga Barang</th>
                         <th>Tanggal Pembelian</th>
                         <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -205,6 +207,7 @@
                     <tr>
                         <td>{{ pembelian.id_pembelian }}</td>
                         <td>{{ pembelian.id_log }}</td>
+                        <td>{{ pembelian.id_distributor }}</td>
                         <td>{{ pembelian.no_resi }}</td>
                         <td>{{ pembelian.harga_pengiriman }}</td>
                         <td>{{ pembelian.lama_pengiriman }}</td>
@@ -212,11 +215,44 @@
                         <td>{{ pembelian.total_harga_barang }}</td>
                         <td>{{ pembelian.tanggal_pembelian }}</td>
                         <td>{{ pembelian.status }}</td>
+                        <td>
+                            <button class="crud-btn" onclick="approve('{{ pembelian.id_log }}', '{{ pembelian.no_resi }}', '{{ pembelian.id_distributor }}')">Approve</button>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+
+    <script>
+        function approve(id_log, no_resi, id_distributor) {
+            fetch('/update_stock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_log: id_log,
+                    no_resi: no_resi,
+                    id_distributor: id_distributor
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Update successful');
+                // Optionally, refresh the page or update the UI
+                location.reload();
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+    </script>
 </body>
 </html>
