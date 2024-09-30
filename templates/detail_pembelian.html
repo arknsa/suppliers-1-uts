@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Produk</title>
+    <title>Detail Pembelian</title>
     <style>
         /* Style yang ada dari halaman Tambah Barang */
         * {
@@ -188,47 +188,30 @@
         }
     </style>
 </head>
-<!-- Header -->
-<header id="header">
-    <a class="logo" href="/manage_product">Suppliers</a>
-   
-</header>
 <body>
+    <!-- Header -->
+    <header id="header">
+        <a class="logo" href="/dashboard">Suppliers</a>
+    </header>
+
     <div class="container">
-        <h2>Detail Produk</h2>
+        <h2>Detail Pembelian</h2>
 
         <!-- Card Detail Produk -->
-        <div class="product-card">
-            <!-- Gambar Produk -->
-            <div class="product-image">
-                <img src="{{ product.link_gambar_barang }}" alt="{{ product.nama_produk }}">
-            </div>
-
+        <div class="pembelian-card">
             <!-- Informasi Produk -->
-            <div class="product-info">
-                <h3>{{ product.nama_produk }}</h3>
+            <div class="pembelian-info">
+                <h3>{{ pembelian.id_pembelian }}</h3>
                 <ul>
-                    <li><span class="label">ID Produk</span> <span>:</span> <span class="value"> {{ product.id_produk }}</span></li>
-                    <li><span class="label">Kategori</span> <span>:</span> <span class="value"> {{ product.kategori }}</span></li>
-                    <li><span class="label">Stok</span> <span>:</span> <span class="value"> {{ product.stock }}</span></li>
-                    <li><span class="label">Stok Minimum</span> <span>:</span> <span class="value"> {{ product.stock_minimum }}</span></li>
-                    <li><span class="label">Stok Maximum</span> <span>:</span> <span class="value"> {{ product.stock_maximum }}</span></li>
-                    <li><span class="label">Harga Satuan</span> <span>:</span> <span class="value"> Rp {{ product.harga }}</span></li>
-                    <li><span class="label">Berat</span> <span>:</span> <span class="value"> {{ product.berat }} kg</span></li>
-                    <li><span class="label">Height</span> <span>:</span> <span class="value"> {{ product.size }} inch</span></li>
-                    <li><span class="label">Width</span> <span>:</span> <span class="value"> {{ product.width }} inch</span></li>
-                    <li><span class="label">Genre</span> <span>:</span> <span class="value"> {{ product.genre }}</span></li>
-                    <li><span class="label">Warna</span> <span>:</span> <span class="value"> {{ product.warna }}</span></li>
-                    <li><span class="label">Deskripsi</span> <span>:</span> <span class="value"> {{ product.deskripsi }}</span></li>
+                    <li><span class="label">ID Log</span> <span>:</span> <span class="value"> {{ pembelian.id_log }}</span></li>
+                    <li><span class="label">No Resi</span> <span>:</span> <span class="value"> {{ pembelian.no_resi }}</span></li>
+                    <li><span class="label">Harga Pengiriman</span> <span>:</span> <span class="value"> Rp {{ pembelian.harga_pengiriman }}</span></li>
+                    <li><span class="label">Lama Pengiriman</span> <span>:</span> <span class="value"> {{ pembelian.lama_pengiriman }} hari</span></li>
+                    <li><span class="label">Total Berat Barang</span> <span>:</span> <span class="value"> {{ pembelian.total_berat_barang }} kg</span></li>
+                    <li><span class="label">Total Harga Barang</span> <span>:</span> <span class="value"> Rp {{ pembelian.total_harga_barang }}</span></li>
+                    <li><span class="label">Tanggal Pembelian</span> <span>:</span> <span class="value"> {{ pembelian.tanggal_pembelian }} kg</span></li>
+                    <li><span class="label">Status</span> <span>:</span> <span class="value"> {{ pembelian.status }} </span></li>
                 </ul>
-            </div>
-
-            <!-- Tombol Aksi -->
-            <div class="product-actions">
-                <a href="/edit_product/{{ product.id_produk }}" class="crud-btn">Edit</a>
-                <form action="/delete_product/{{ product.id_produk }}" method="POST" style="display:inline;">
-                    <button type="submit" class="crud-btn delete">Hapus</button>
-                </form>
             </div>
         </div>
     </div>

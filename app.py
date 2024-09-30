@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # Inisialisasi Firebase Admin SDK
-cred = credentials.Certificate("uts-iak-firebase-adminsdk-q4jev-572b25dfae.json")
+cred = credentials.Certificate("uts-iak-firebase-adminsdk-q4jev-fb337bb7ab.json")
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -118,12 +118,17 @@ def dashboard():
     return render_template('index.html')
 
 # Koleksi untuk produk
-produk_ref = db.collection('db_produk')
+product_ref = db.collection('db_produk')
 
 @app.route('/manage_product')
 def manage_product():
+    product_ref = db.collection('db_produk')
     try:
-        products = [doc.to_dict() for doc in produk_ref.stream()]
+        products = []
+        for doc in product_ref.stream():
+            product = doc.to_dict()
+            product['id_produk'] = doc.id
+            products.append(product)
         return render_template('manage_product.html', products=products)
     except Exception as e:
         print(f"Error in manage_product: {e}")
@@ -132,78 +137,133 @@ def manage_product():
 @app.route('/add_product', methods=['GET', 'POST'])
 def add_product():
     if request.method == 'POST':
-        new_product = {
-            'nama_produk': request.form['nama_produk'],
-            'kategori': request.form['kategori'],
-            'stock': int(request.form['stock']),
-            'harga': float(request.form['harga']),
-            'berat': float(request.form['berat']),
-            'size': request.form['size'],
-            'width': request.form['width'],
-            'genre': request.form['genre'],
-            'warna': request.form['warna'],
-            'deskripsi': request.form['deskripsi'],
-            'link_gambar_barang': request.form['link_gambar_barang']
-        }
-        produk_ref.add(new_product)
-        return redirect(url_for('manage_product'))
-    
+        try:
+            # Cek jumlah produk yang sudah ada untuk format ID
+            products_ref = db.collection('db_produk')
+            product_docs = products_ref.stream()
+            product_count = sum(1 for _ in product_docs) + 1  # Hitung berapa produk yang sudah ada
+
+            # Generate id_produk dengan format "PROD{number}"
+            new_product_id = f"PROD{product_count:03d}"  # 04d untuk memastikan selalu 4 digit, misalnya PROD0001
+
+            # Buat dictionary produk baru
+            new_product = {
+                'id_produk': new_product_id,
+                'nama_produk': request.form['nama_produk'],
+                'kategori': request.form['kategori'],
+                'stock': int(request.form['stock']),
+                'stock_minimum': int(request.form['stock_minimum']),
+                'stock_maximum': int(request.form['stock_maximum']),
+                'harga': float(request.form['harga']),
+                'berat': float(request.form['berat']),
+                'height': float(request.form['height']),
+                'width': float(request.form['width']),
+                'genre': request.form['genre'],
+                'warna': request.form['warna'],
+                'deskripsi': request.form['deskripsi'],
+                'link_gambar_barang': request.form['link_gambar_barang']
+            }
+            
+            # Tambahkan produk ke koleksi Firestore dengan ID yang baru dibuat
+            products_ref.document(new_product_id).set(new_product)
+
+            return redirect(url_for('manage_product'))
+
+        except Exception as e:
+            print(f"Error at add_product: {e}")
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
     return render_template('add_product.html')
 
-@app.route('/edit_product/<int:id_produk>', methods=['GET', 'POST'])
+@app.route('/edit_product/<string:id_produk>', methods=['GET', 'POST'])
 def edit_product(id_produk):
-    product_doc = produk_ref.document(id_produk)
-    product = product_doc.get()
+    try:
+        product_doc = product_ref.document(id_produk)
+        product = product_doc.get()
+        
+        if not product.exists:
+            flash('Produk tidak ditemukan', 'danger')
+            return redirect(url_for('manage_product'))
 
-    if not product.exists:
-        flash('Produk tidak ditemukan', 'danger')
+        if request.method == 'POST':
+            updated_data = {
+                'nama_produk': request.form['nama_produk'],
+                'kategori': request.form['kategori'],
+                'stock': int(request.form['stock']),
+                'stock_minimum': int(request.form['stock_minimum']),
+                'stock_maximum': int(request.form['stock_maximum']),
+                'harga': float(request.form['harga']),
+                'berat': float(request.form['berat']),
+                'height': float(request.form['height']),
+                'width': float(request.form['width']),
+                'genre': request.form['genre'],
+                'warna': request.form['warna'],
+                'deskripsi': request.form['deskripsi'],
+                'link_gambar_barang': request.form['link_gambar_barang']
+            }
+            product_doc.update(updated_data)
+            flash('Produk berhasil diperbarui', 'success')
+            return redirect(url_for('manage_product'))
+
+        product_data = product.to_dict()
+        product_data['id_produk'] = id_produk  # Tambahkan id_produk ke data
+        return render_template('edit_product.html', product=product_data)
+    except Exception as e:
+        flash(f'Terjadi kesalahan: {str(e)}', 'danger')
         return redirect(url_for('manage_product'))
-
-    if request.method == 'POST':
-        updated_data = {
-            'nama_produk': request.form['nama_produk'],
-            'kategori': request.form['kategori'],
-            'stock': int(request.form['stock']),
-            'harga': float(request.form['harga']),
-            'berat': float(request.form['berat']),
-            'size': request.form['size'],
-            'width': request.form['width'],
-            'genre': request.form['genre'],
-            'warna': request.form['warna'],
-            'deskripsi': request.form['deskripsi'],
-            'link_gambar_barang': request.form['link_gambar_barang']
-        }
-        product_doc.update(updated_data)
-        flash('Produk berhasil diperbarui', 'success')
-        return redirect(url_for('manage_product'))
-
-    return render_template('edit_product.html', product=product.to_dict())
-
-@app.route('/delete_product/<int:id_produk>', methods=['POST'])
+    
+@app.route('/delete_product/<string:id_produk>', methods=['POST'])
 def delete_product(id_produk):
-    produk_ref.document(id_produk).delete()
+    try:
+        product_ref.document(id_produk).delete()
+        flash('Produk berhasil dihapus', 'success')
+    except Exception as e:
+        flash(f'Terjadi kesalahan saat menghapus produk: {str(e)}', 'danger')
     return redirect(url_for('manage_product'))
 
-@app.route('/view_product/<int:id_produk>', methods=['GET'])
+@app.route('/view_product/<string:id_produk>', methods=['GET'])
 def view_product(id_produk):
-    product = produk_ref.document(id_produk).get()
-
-    if not product.exists:
-        flash('Produk tidak ditemukan', 'danger')
-        return redirect(url_for('manage_product'))
-
-    return render_template('view_product.html', product=product.to_dict())
-
-produk_reff = db.collection('db_pembelian')
-
-@app.route('/manage_transaksi')
-def manage_transaksi():
     try:
-        transaksi = [doc.to_dict() for doc in produk_reff.stream()]
-        return render_template('manage_transaksi.html', products=transaksi)
+        product = product_ref.document(id_produk).get()
+        if not product.exists:
+            flash('Produk tidak ditemukan', 'danger')
+            return redirect(url_for('manage_product'))
+        product_data = product.to_dict()
+        product_data['id_produk'] = id_produk
+        return render_template('view_product.html', product=product_data)
     except Exception as e:
-        print(f"Error in manage_transaksi: {e}")
+        flash(f'Terjadi kesalahan: {str(e)}', 'danger')
+        return redirect(url_for('manage_product'))
+    
+pembelian_ref = db.collection('db_pembelian')
+
+@app.route('/manage_pembelian')
+def manage_pembelian():
+    pembelian_ref = db.collection('db_pembelian')
+    try:
+        pembelians = []
+        for doc in pembelian_ref.stream():
+            pembelian = doc.to_dict()
+            pembelian['id_pembelian'] = doc.id
+            pembelians.append(pembelian)
+        return render_template('manage_pembelian.html', pembelians=pembelians)
+    except Exception as e:
+        print(f"Error in manage_pembelian: {e}")
         return "An error occurred", 500
+    
+@app.route('/detail_pembelian/<string:id_pembelian>', methods=['GET'])
+def detail_pembelian(id_pembelian):
+    try:
+        pembelian = pembelian_ref.document(id_pembelian).get()
+        if not pembelian.exists:
+            flash('Pembelian tidak ditemukan', 'danger')
+            return redirect(url_for('manage_pembelian'))
+        pembelian_data = pembelian.to_dict()
+        pembelian_data['id_pembelian'] = id_pembelian
+        return render_template('detail_pembelian.html', pembelian=pembelian_data)
+    except Exception as e:
+        flash(f'Terjadi kesalahan: {str(e)}', 'danger')
+        return redirect(url_for('manage_pembelian'))
     
 @app.route('/check_price', methods=['POST'])
 def check_price():
@@ -221,7 +281,7 @@ def check_price():
         # Simpan data transaksi ke db_transaksi
         new_transaction = {
             "id_log": id_log,  # Menggunakan id_log yang di-generate
-            "id_retail": data["id_retail"],  # Diisi secara otomatis dengan "22"
+            "id_retail": data["id_retail"],  
             "id_distributor": data['id_distributor'],
             "kota_tujuan": data['kota_tujuan'],
             "total_berat_barang": data['total_berat_barang'],
@@ -242,14 +302,29 @@ def check_price():
             # Simpan data order ke db_order
             order_ref.add(order_data)
 
+        # Tentukan URL API berdasarkan id_distributor
+        distributor_id = data['id_distributor']
+        if distributor_id == "DIS01":
+            api_url = "http://159.223.41.243:8000/api/distributors6/orders/cek_ongkir"
+        elif distributor_id == "DIS02":
+            api_url = "http://159.223.41.243:8000/api/distributors2/orders/cek_ongkir"
+        elif distributor_id == "DIS03":
+            api_url = "http://159.223.41.243:8000/api/distributors3/orders/cek_ongkir"
+        else:
+            return jsonify({"error": "ID distributor tidak valid"}), 400
+
         # Cek ongkir dari distributor
-        ongkir_response = requests.post(f"http://159.223.41.243:8000/api/distributors6/orders/cek_ongkir", json={
+        ongkir_response = requests.post(api_url, json={
             "id_log": id_log,  # Menggunakan id_log yang baru di-generate
             "kota_asal": "jakarta",  # Auto isi dengan "jakarta"
             "kota_tujuan": data['kota_tujuan'],
-            "quantity": sum(item['quantity'] for item in data['cart']),  # Total quantity dari semua produk
-            "berat": data['total_berat_barang']
+            "berat": data["total_berat_barang"]  # Menghitung total berat dari semua item di cart
         })
+
+        if ongkir_response.status_code != 200:
+            return jsonify({"error": "Gagal mendapatkan ongkir dari distributor"}), 400
+
+        # Pastikan respons JSON valid
         ongkir_data = ongkir_response.json()
 
         # Update data transaksi dengan harga pengiriman dan lama pengiriman
@@ -261,18 +336,17 @@ def check_price():
         # Simpan transaksi ke db_transaksi dengan id_log yang dihasilkan
         transaksi_ref.document(id_log).set(new_transaction)
 
-        if ongkir_response.status_code != 200:
-            return jsonify({"error": "Gagal mendapatkan ongkir dari distributor"}), 400
-
         return jsonify({
             "message": "Pemeriksaan harga berhasil",
-            "transaction_id": id_log,  # Menggunakan id_log yang baru di-generate
+            "id_log": id_log,  # Menggunakan id_log yang baru di-generate
             "harga_pengiriman": ongkir_data['harga_pengiriman'],
             "lama_pengiriman": ongkir_data.get('lama_pengiriman')
         }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 
 @app.route('/place_order', methods=['POST'])
 def place_order():
@@ -288,20 +362,38 @@ def place_order():
 
         transaction_data = transaction_doc.to_dict()
 
-        # Melakukan pemesanan ke distributor
-        order_response = requests.post(f"http://159.223.41.243:8000/api/distributors6/orders/fix_kirim", json={
+        # Ambil id_distributor dari data transaksi
+        distributor_id = transaction_data.get('id_distributor')
+
+        # Tentukan URL API berdasarkan id_distributor
+        if distributor_id == "DIS01":
+            api_url = "http://159.223.41.243:8000/api/distributors6/orders/fix_kirim"
+        elif distributor_id == "DIS02":
+            api_url = "http://159.223.41.243:8000/api/distributors2/orders/fix_kirim"
+        elif distributor_id == "DIS03":
+            api_url = "http://159.223.41.243:8000/api/distributors3/orders/fix_kirim"
+        else:
+            return jsonify({"error": "ID distributor tidak valid"}), 400
+
+        # Melakukan pemesanan ke distributor yang sesuai
+        order_response = requests.post(api_url, json={
             "id_log": data['id_log']
         })
+
+        # Cek apakah ada error dari API distributor
+        if order_response.status_code != 200:
+            return jsonify({"error": "Gagal melakukan pemesanan ke distributor"}), 400
+
         order_data = order_response.json()
 
         # Membuat objek Pembelian baru
         new_purchase = {
-            "id_log": transaction_ref,  # Menggunakan referensi ke dokumen db_transaksi
+            "id_log": data['id_log'],  # Menggunakan id_log dari transaksi
             "total_harga_barang": transaction_data['total_harga_barang'],
             "total_berat_barang": transaction_data['total_berat_barang'],
-            "no_resi": order_data['no_resi'],  # Mengambil no_resi dari respons
+            "no_resi": order_data['no_resi'],  # Mengambil no_resi dari respons API
             "harga_pengiriman": order_data['harga_pengiriman'],
-            "lama_pengiriman": order_data.get('lama_pengiriman'),  # Mengambil harga_pengiriman dari respons
+            "lama_pengiriman": order_data.get('lama_pengiriman'),  # Mengambil lama_pengiriman jika ada
             "tanggal_pembelian": firestore.SERVER_TIMESTAMP  # Menggunakan timestamp server
         }
 
@@ -313,11 +405,12 @@ def place_order():
             "purchase_id": transaction_ref.id,  # Menggunakan id dari referensi
             "no_resi": order_data['no_resi'],
             "harga_pengiriman": order_data['harga_pengiriman'],
-            "lama_pengiriman": order_data.get('lama_pengiriman') 
+            "lama_pengiriman": order_data.get('lama_pengiriman'),
         }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 
 # Endpoint untuk supplier
 @app.route('/suppliers', methods=['GET'])
@@ -361,10 +454,23 @@ def update_stock():
     data = request.json
 
     try:
-        # Ambil no_resi dari input POST
+        # Ambil no_resi dan id_distributor dari input POST
         no_resi = data.get('no_resi')
+        id_distributor = data.get('id_distributor')  # Ambil id_distributor
         if not no_resi:
             return jsonify({"error": "no_resi harus diisi"}), 400
+        if not id_distributor:
+            return jsonify({"error": "id_distributor harus diisi"}), 400
+
+        # Tentukan URL API berdasarkan id_distributor
+        if id_distributor == "DIS01":
+            api_url = f"http://159.223.41.243:8000/api/distributors6/status/{no_resi}"
+        elif id_distributor == "DIS02":
+            api_url = f"http://159.223.41.243:8000/api/distributors2/status/{no_resi}"
+        elif id_distributor == "DIS03":
+            api_url = f"http://159.223.41.243:8000/api/distributors3/status/{no_resi}"
+        else:
+            return jsonify({"error": "ID distributor tidak valid"}), 400
 
         # Ambil order berdasarkan id_log
         order_ref = db.collection('db_order').where('id_log', '==', data['id_log']).get()
@@ -374,8 +480,8 @@ def update_stock():
 
         order_data = order_ref[0].to_dict()  # Mengambil data order pertama
 
-        # Cek status pengiriman menggunakan no_resi
-        status_response = requests.get(f"http://159.223.41.243:8000/api/status/{no_resi}")
+        # Cek status pengiriman menggunakan no_resi dan API yang sesuai
+        status_response = requests.get(api_url)
         status_data = status_response.json()
 
         if status_data.get('status') == "On The Way":
