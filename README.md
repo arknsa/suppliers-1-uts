@@ -88,3 +88,16 @@ output:
     "message": "Pemeriksaan harga berhasil"
 }
 
+d. POST /api/place_order
+input:
+{
+    "id_log": "SUP01RET03DIS0196"
+}
+output:
+{
+    "harga_pengiriman": 121000.0,
+    "lama_pengiriman": "2 hari",
+    "message": "Pemesanan berhasil dilakukan",
+    "no_resi": "LESS02R01PK001",
+    "purchase_id": "SUP01RET03DIS0196"
+}
