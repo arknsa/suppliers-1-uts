@@ -39,7 +39,8 @@ Dokumentasi mengenai penggunakan endpoint dapat diakses melalui link berikut :
     "alamat": "Jakarta",
     "nama": "Supplier Ban",
      “contact” : “81234567”
-} <br> b. GET /api/products <br> Return : 
+} <br>
+<br> b. GET /api/products <br> Return : 
 {
         "berat": 0.61,
         "deskripsi ": "Genio Ban Luar 20 x 1.75 157 berukuran 20 yang cocok menggantikan ban luar sepeda dengan ukuran 20 x 1.75. Fitur: ukuran 20 inci, bahan rubber, jenis ban wire, traction yang baik.",
@@ -55,7 +56,7 @@ Dokumentasi mengenai penggunakan endpoint dapat diakses melalui link berikut :
         "stock_minimun": 10,
         "warna ": "hitam",
         "width": 1.75
-    }
+    } <br>
 <br> c. POST /api/check_price
 <br> input: 
 {
@@ -81,7 +82,7 @@ Dokumentasi mengenai penggunakan endpoint dapat diakses melalui link berikut :
     "id_log": "SUP01RET03DIS0196",
     "lama_pengiriman": "2 hari",
     "message": "Pemeriksaan harga berhasil"
-}
+} <br>
 <br> d. POST /api/place_order
 <br> input:
 {
