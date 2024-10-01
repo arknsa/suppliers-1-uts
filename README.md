@@ -26,22 +26,20 @@ Supplier dapat mengatur ketersediaan produk berdasarkan statur pembelian yang se
 
 Dokumentasi API Modul Supplier 1 (Ban)
 Dokumentasi mengenai penggunakan endpoint dapat diakses melalui link berikut : 
-https://app.swaggerhub.com/apis-docs/SriRanita/dokumentasi-api_modul_supplier_ban/1.0.0﻿# UTS-SUPPLIER1
+[UTS-SUPPLIER1](https://app.swaggerhub.com/apis-docs/SriRanita/dokumentasi-api_modul_supplier_ban/1.0.0)
 
 ### Step by Step Pengunaan Web Suppliers 1: <br>
 1. Akses web suppliers 1 di: http://167.99.238.114:8000/
 2. Login menggunakan akun admin, berikut informasinya: <br> username: admin_supplier <br> password: duar123 <br>
-3. Adapun beberapa API yang kami gunakan yaitu: <br> a. GET /api/suppliers
-Return : 
+3. Adapun beberapa API yang kami gunakan yaitu:
+<br> a. GET /api/suppliers
+<br> Return : 
 {
     "id": "SUP01",
     "alamat": "Jakarta",
     "nama": "Supplier Ban",
      “contact” : “81234567”
-}
-
-b. GET /api/products
-Return : 
+} <br> b. GET /api/products <br> Return : 
 {
         "berat": 0.61,
         "deskripsi ": "Genio Ban Luar 20 x 1.75 157 berukuran 20 yang cocok menggantikan ban luar sepeda dengan ukuran 20 x 1.75. Fitur: ukuran 20 inci, bahan rubber, jenis ban wire, traction yang baik.",
@@ -58,9 +56,8 @@ Return :
         "warna ": "hitam",
         "width": 1.75
     }
-
-c. POST /api/check_price
-input: 
+<br> c. POST /api/check_price
+<br> input: 
 {
     "cart":[
         {
@@ -78,21 +75,19 @@ input:
     "total_berat_barang" : 70,
     "kota_tujuan" : "ngawi"
 }
-
-output:
+<br> output:
 {
     "harga_pengiriman": 121000.0,
     "id_log": "SUP01RET03DIS0196",
     "lama_pengiriman": "2 hari",
     "message": "Pemeriksaan harga berhasil"
 }
-
-d. POST /api/place_order
-input:
+<br> d. POST /api/place_order
+<br> input:
 {
     "id_log": "SUP01RET03DIS0196"
 }
-output:
+<br> output:
 {
     "harga_pengiriman": 121000.0,
     "lama_pengiriman": "2 hari",
