@@ -97,3 +97,11 @@ Dokumentasi mengenai penggunakan endpoint dapat diakses melalui link berikut :
     "no_resi": "LESS02R01PK001",
     "purchase_id": "SUP01RET03DIS0196"
 }
+
+### Project ini dibuat oleh:
+1. Abdullah Muhammad Idris - 162012133064
+2. Sri Ranita - 162112133003
+3. Rafli Maulana Firmansyah - 162112133064
+4. Nafisahika Putri Herra - 164221039
+5. Arkan Syafiq At'taqy - 164221062
+6. Ananda Alvin Bernerdian Hartono - 164221096
