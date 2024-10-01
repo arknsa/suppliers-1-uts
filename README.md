@@ -30,7 +30,12 @@ https://app.swaggerhub.com/apis-docs/SriRanita/dokumentasi-api_modul_supplier_ba
 
 ### Step by step: <br>
 1. Akses web suppliers 1 di: http://167.99.238.114:8000/
-2. Login menggunakan akun admin, username: admin_supplier, password: duar123
+2. Login menggunakan akun admin, berikut informasinya:
+
+username: admin_supplier 
+
+password: duar123
+
 3. Adapun beberapa API yang kami gunakan yaitu:
 
 a. GET /api/suppliers
