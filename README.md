@@ -29,9 +29,9 @@ Dokumentasi mengenai penggunakan endpoint dapat diakses melalui link berikut :
 https://app.swaggerhub.com/apis-docs/SriRanita/dokumentasi-api_modul_supplier_ban/1.0.0﻿# UTS-SUPPLIER1
 
 ### Step by step: <br>
-1. akses web suppliers 1 di: http://167.99.238.114:8000/
-2. login menggunakan akun admin, username: admin_supplier, password: duar123
-3. adapun beberapa API yang kami gunakan yaitu:
+1. Akses web suppliers 1 di: http://167.99.238.114:8000/
+2. Login menggunakan akun admin, username: admin_supplier, password: duar123
+3. Adapun beberapa API yang kami gunakan yaitu:
 a. GET /api/suppliers
 Return : 
 {
