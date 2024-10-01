@@ -268,7 +268,7 @@ def manage_pembelian():
                     elif id_distributor == "DIS02":
                         api_url = f"http://143.244.170.95:8000/api/status/{no_resi}"
                     elif id_distributor == "DIS03":
-                        api_url = f"http://159.223.41.243:8000/api/dis/status/{no_resi}"
+                        api_url = f"http://159.223.41.243:8000/api/status/{no_resi}"
                     else:
                         api_url = None
                     
@@ -331,11 +331,19 @@ def check_price():
     try:
         # Cek jumlah transaksi untuk id_log format
         transaksi_ref = db.collection('db_transaksi')
-        transaksi_docs = transaksi_ref.stream()
-        cek_harga_ke = sum(1 for _ in transaksi_docs) + 1  # Hitung berapa kali cek harga dilakukan sebelumnya
+        # transaksi_docs = transaksi_ref.stream()
+        # Konversi 'id_retail' dan 'id_distributor' ke integer jika belum integer
+        id_retail = data['id_retail']
+        id_distributor = data['id_distributor']
 
-        # Generate id_log dengan format "SUP01RET03DIS01"
-        id_log = f"SUP01RET03DIS01{cek_harga_ke:0d}"  # 000 di bagian akhir menandakan cek harga ke berapa
+        # Ambil semua dokumen dari transaksi yang cocok
+        transaksi_docs = db.collection('db_transaksi').where('id_retail', '==', id_retail).where('id_distributor', '==', id_distributor).stream()
+
+        # Hitung berapa kali cek harga dilakukan sebelumnya
+        cek_harga_ke = sum(1 for _ in transaksi_docs) + 1
+
+        # Generate id_log dengan format "SUP01RET02DIS03" dengan RET dan DIS berdasarkan input
+        id_log = f"SUP01{id_retail}DIS{id_distributor}{cek_harga_ke:0d}" #di bagian akhir menandakan cek harga ke berapa
 
         # Simpan data transaksi ke db_transaksi
         new_transaction = {
@@ -368,14 +376,14 @@ def check_price():
         elif distributor_id == "DIS02":
             api_url = "http://143.244.170.95:8000/api/distributor5/orders/cek_ongkir"
         elif distributor_id == "DIS03":
-            api_url = "http://159.223.41.243:8000/api/distributors3/orders/cek_ongkir"
+            api_url = "http://159.223.41.243:8000/api/distributors6/orders/cek_ongkir"
         else:
             return jsonify({"error": "ID distributor tidak valid"}), 400
 
         # Cek ongkir dari distributor
         ongkir_response = requests.post(api_url, json={
             "id_log": id_log,  # Menggunakan id_log yang baru di-generate
-            "kota_asal": "solo",  # Auto isi dengan "jakarta"
+            "kota_asal": "Jakarta",  # Auto isi dengan "jakarta"
             "kota_tujuan": data['kota_tujuan'],
             "berat": data["total_berat_barang"]  # Menghitung total berat dari semua item di cart
             # "quantity": sum(item['quantity'] for item in data['cart'])  # Menghitung total quantity dari semua item di cart
@@ -436,7 +444,7 @@ def place_order():
         elif distributor_id == "DIS02":
             api_url = "http://143.244.170.95:8000/api/distributor5/orders/fix_kirim"
         elif distributor_id == "DIS03":
-            api_url = "http://159.223.41.243:8000/api/distributors3/orders/fix_kirim"
+            api_url = "http://159.223.41.243:8000/api/distributors6/orders/fix_kirim"
         else:
             return jsonify({"error": "ID distributor tidak valid"}), 400
 
