@@ -32,7 +32,15 @@ Dokumentasi mengenai penggunakan endpoint dapat diakses melalui link berikut :
 
 1. Akses web suppliers 1 di: http://167.99.238.114:8000/
 2. Login menggunakan akun admin, berikut informasinya: <br> username: admin_supplier <br> password: duar123 <br>
-3. Adapun beberapa API yang kami gunakan yaitu:
+3. Adapun databse yang kami gunakan terdiri dari table berikut:
+<br> a. db_produk (id_produk, nama_produk, kategori, stok, stok_min, stok_max, harga, berat, height, width, genre, warna, deskripsi, gambar, aksi)
+<br> b. db_transaksi (id_distributor, id_log, id_retail, kota_tujuan, harga_pengiriman, lama_pengiriman, total_berat_barang, total_harga_barang)
+<br> c. db_pembelian (id_log, harga_pengiriman, lama_pengiriman, no_resi, tanggal_pembelian, total_berat_barang, total_harga_barang
+<br> d. db_user (username, password)
+<br> e. db_order (id_log, id_produk, quantity)
+<br> f. db_supplier (nama, alamat, kontak)
+
+5. Adapun beberapa API yang kami gunakan yaitu:
 <br> a. GET /api/suppliers
 <br> Return : 
 {
